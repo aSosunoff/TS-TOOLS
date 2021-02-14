@@ -25,7 +25,7 @@
   "scripts": {
     "lint": "eslint src",
     "prepublish": "npm prune",
-    "to_npm": "npm publish && git add . && git commit -m \"run dist\" && git push"
+    "to_npm": "npm publish"
   },
   "keywords": [
     "react",
