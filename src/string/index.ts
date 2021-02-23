@@ -5,3 +5,4 @@ export type { First } from "./first";
 export type { Tail } from "./tail";
 export type { Replace } from "./replace";
 export type { ReplaceAll } from "./replace-all";
+export type { At } from "./At";
