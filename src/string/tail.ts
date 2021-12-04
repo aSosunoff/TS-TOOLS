@@ -1,1 +1,4 @@
-export type Tail<T extends string = ""> = T extends `${any}${infer R}` ? R : T;
+export type Tail<
+  T extends string = "",
+  D extends string = ""
+> = T extends `${any}${D}${infer R}` ? R : "";
