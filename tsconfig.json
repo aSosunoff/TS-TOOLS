@@ -12,7 +12,8 @@
     "isolatedModules": true,
     "strictNullChecks": true,
     /* "noEmit": true, */
-    "sourceMap": true
+    "sourceMap": true,
+    "incremental": false
   },
   "include": ["src/**/*"]
 }
