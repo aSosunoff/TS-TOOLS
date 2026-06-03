@@ -30,10 +30,10 @@
     "prepublishOnly": "npm run build"
   },
   "keywords": [
-    "react",
-    "hook",
-    "useForm",
-    "form"
+    "typescript",
+    "types",
+    "type-utils",
+    "utility-types"
   ],
   "files": [
     "/dist",
