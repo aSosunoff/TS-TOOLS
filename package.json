@@ -7,7 +7,8 @@
     "name": "Alexander Sosunov",
     "url": "https://github.com/aSosunoff"
   },
-  "main": "src/index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bugs": {
     "url": "https://github.com/aSosunoff/ts-tools/issues"
   },
@@ -23,9 +24,10 @@
     "eslint": "^8.4.0"
   },
   "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint src",
-    "prepublish": "npm prune",
-    "to_npm": "npm publish"
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "react",
