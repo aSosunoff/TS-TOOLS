@@ -1,8 +1,5 @@
-export type CamelTo<
-  T extends string,
-  WithCharacter extends string = "-",
-> = T extends `${infer First}${infer Rest}`
+export type SplitCamelCase<T extends string, Separator extends string = "-"> = T extends `${infer First}${infer Rest}`
   ? Rest extends Uncapitalize<Rest>
-    ? `${First}${CamelTo<Rest, WithCharacter>}`
-    : `${First}${WithCharacter}${CamelTo<Rest, WithCharacter>}`
+    ? `${First}${SplitCamelCase<Rest, Separator>}`
+    : `${First}${Separator}${SplitCamelCase<Rest, Separator>}`
   : T;
