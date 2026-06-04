@@ -1,4 +1,8 @@
-# TS-TOOLS
+<p align="center">
+  <img src="./ts-tools-pro-3-brackets.svg" alt="TS-TOOLS logo" width="240">
+</p>
+
+# TypeScript - Tools
 
 TypeScript type-level utility collection.
 

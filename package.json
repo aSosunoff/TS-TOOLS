@@ -38,6 +38,7 @@
   "files": [
     "/dist",
     "/src",
+    "logo.svg",
     "LICENSE",
     "README.md"
   ],
