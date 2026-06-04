@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./ts-tools-pro-3-brackets.svg" alt="TS-TOOLS logo" width="240">
+  <img src="./ts-tools-pro-1-generics.svg" alt="TS-TOOLS logo" width="240">
 </p>
 
 # TypeScript - Tools
