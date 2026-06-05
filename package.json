@@ -28,7 +28,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint src",
     "prepublishOnly": "npm run build",
-    "pack_local": "npm run build & npm pack"
+    "pack_local": "npm run build && npm pack"
   },
   "keywords": [
     "typescript",
@@ -39,7 +39,7 @@
   "files": [
     "/dist",
     "/src",
-    "logo.svg",
+    "ts-tools-pro-1-generics.svg",
     "LICENSE",
     "README.md"
   ],

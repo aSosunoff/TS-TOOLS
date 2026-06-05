@@ -107,6 +107,18 @@ type Result = array.Length<["a", "b", "c"]>;
 // 3
 ```
 
+### `array.ArrayType<T>`
+
+Returns the item type from an array type.
+
+```ts
+type Result = array.ArrayType<Array<{ id: number; name: string }>>;
+// {
+//   id: number;
+//   name: string;
+// }
+```
+
 ## String Utilities
 
 ### `string.Split<S, D>`
@@ -265,6 +277,46 @@ type Result = object.CollapseObject<{
 // {
 //   "user.profile.name": string;
 //   active: boolean;
+// }
+```
+
+### `object.PartialField<T, F>`
+
+Makes selected object fields optional and keeps all other fields unchanged.
+
+```ts
+type Result = object.PartialField<
+  {
+    id: number;
+    name: string;
+    email: string;
+  },
+  "email"
+>;
+// {
+//   id: number;
+//   name: string;
+//   email?: string;
+// }
+```
+
+### `object.RequiredField<T, K>`
+
+Makes selected object fields required and keeps all other fields unchanged.
+
+```ts
+type Result = object.RequiredField<
+  {
+    id: number;
+    name?: string;
+    email?: string;
+  },
+  "name" | "email"
+>;
+// {
+//   id: number;
+//   name: string;
+//   email: string;
 // }
 ```
 
