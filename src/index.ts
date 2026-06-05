@@ -30,6 +30,7 @@ export type { GetTypeByPropsPath } from "./object/get-type-by-props-path";
 export type { isObject } from "./object/is-object";
 export type { Merge } from "./object/merge";
 export type { PropsPath } from "./object/props-path";
+export type { PartialField } from "./object/partial-field";
 
 export type { At as StringAt } from "./string/At";
 export type { First as StringFirst } from "./string/first";
