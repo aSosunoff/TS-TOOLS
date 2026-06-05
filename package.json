@@ -28,7 +28,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint src",
     "prepublishOnly": "npm run build",
-    "pack_local": "npm run build && npm pack"
+    "pack_local": "npm run build && npm pack",
+    "pack_npm": "npm run prepublishOnly && npm publish"
   },
   "keywords": [
     "typescript",
