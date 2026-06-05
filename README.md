@@ -33,6 +33,17 @@ import type {
 } from "@asosunoff/ts-tools";
 ```
 
+You can also import commonly used utilities directly from the package root.
+
+```ts
+import type {
+  ArrayLast,
+  ExactRecord,
+  HasOnlyKeys,
+  StringReplaceAll,
+} from "@asosunoff/ts-tools";
+```
+
 ## Array Utilities
 
 ### `array.First<T>`
@@ -198,6 +209,15 @@ type Result = string.At<"hello", 1>;
 
 ## Object Utilities
 
+Key-check helpers use different directions:
+
+| Utility | Checks |
+| --- | --- |
+| `object.HasKeys<K, T>` | every key in `K` exists in `T` |
+| `object.HasOnlyKeys<K, T>` | every key in `T` is allowed by `K` |
+| `object.HasExactKeys<K, T>` | both previous checks are true |
+| `object.ExactRecord<K, T>` | returns `T` only when it is an exact `Record<K, unknown>` |
+
 ### `object.Merge<A, B>`
 
 Merges two object types. Properties from `B` override properties from `A`.
@@ -259,6 +279,102 @@ type Result = object.GetTypeByPropsPath<
   "user.profile.name"
 >;
 // string
+```
+
+### `object.HasKeys<K, T>`
+
+Checks whether every key in `K` exists in `T`.
+
+```ts
+type A = object.HasKeys<
+  "id",
+  {
+    id: number;
+    name: string;
+  }
+>;
+// true
+
+type B = object.HasKeys<
+  "id" | "email",
+  {
+    id: number;
+    name: string;
+  }
+>;
+// false
+```
+
+### `object.HasOnlyKeys<K, T>`
+
+Checks whether `T` has no keys outside `K`.
+
+```ts
+type KeysList = "alert" | "confirm";
+
+type A = object.HasOnlyKeys<
+  KeysList,
+  {
+    alert: { title: string };
+    confirm: { message: string };
+  }
+>;
+// true
+
+type B = object.HasOnlyKeys<
+  KeysList,
+  {
+    alert: { title: string };
+    confirm: { message: string };
+    custom: { id: string };
+  }
+>;
+// false
+```
+
+### `object.HasExactKeys<K, T>`
+
+Checks whether `T` has exactly the selected key union.
+
+```ts
+type Result = object.HasExactKeys<
+  "id" | "name",
+  {
+    id: number;
+    name: string;
+  }
+>;
+// true
+```
+
+### `object.ExactRecord<K, T>`
+
+Returns `T` only when it is a record with every key from `K` and no keys outside `K`.
+
+```ts
+type KeysList = "alert" | "confirm";
+
+type A = object.ExactRecord<
+  KeysList,
+  {
+    alert: { title: string };
+    confirm: { message: string };
+  }
+>;
+// {
+//   alert: { title: string };
+//   confirm: { message: string };
+// }
+
+type B = object.ExactRecord<
+  KeysList,
+  {
+    alert: { title: string };
+    confirm: { message: string };
+    custom: { id: string };
+  }
+>;
+// never
 ```
 
 ### `object.CollapseObject<T>`

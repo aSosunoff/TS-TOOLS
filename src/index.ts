@@ -26,7 +26,11 @@ export type { ReplaceAll as CommonReplaceAll } from "./common/replace-all";
 export type { SplitCamelCase } from "./common/split-camel-case";
 
 export type { CollapseObject } from "./object/collapse-object";
+export type { ExactRecord } from "./object/exact-record";
 export type { GetTypeByPropsPath } from "./object/get-type-by-props-path";
+export type { HasExactKeys } from "./object/has-exact-keys";
+export type { HasKeys } from "./object/has-keys";
+export type { HasOnlyKeys } from "./object/has-only-keys";
 export type { isObject } from "./object/is-object";
 export type { Merge } from "./object/merge";
 export type { PropsPath } from "./object/props-path";
