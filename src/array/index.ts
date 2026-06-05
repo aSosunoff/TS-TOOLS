@@ -6,3 +6,4 @@ export type { Shift } from "./shift";
 export type { Unshift } from "./unshift";
 export type { Join } from "./join";
 export type { Length } from "./length";
+export type { ArrayType } from "./array-type";

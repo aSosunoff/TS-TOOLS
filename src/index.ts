@@ -14,6 +14,7 @@ export type { Pop as ArrayPop } from "./array/pop";
 export type { Push as ArrayPush } from "./array/push";
 export type { Shift as ArrayShift } from "./array/shift";
 export type { Unshift as ArrayUnshift } from "./array/unshift";
+export type { ArrayType } from "./array/array-type";
 
 export type { Anyfy } from "./any/anyfy";
 
