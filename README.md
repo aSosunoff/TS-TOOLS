@@ -38,10 +38,70 @@ You can also import commonly used utilities directly from the package root.
 ```ts
 import type {
   ArrayLast,
+  DtoWithCamelCaseKeys,
+  DtoWithCamelCaseKeysRecursive,
+  GetOptionalKeys,
   HasOnlyKeys,
+  IsRequiredKey,
+  OverrideFields,
   StringReplaceAll,
+  SnakeToCamelCase,
   StrictRecord,
 } from "@asosunoff/ts-tools";
+```
+
+Example:
+
+```ts
+import type { object, string } from "@asosunoff/ts-tools";
+
+type ApiUser = {
+  user_id: number;
+  first_name: string;
+  last_name?: string;
+};
+
+type ClientUser = object.DtoWithCamelCaseKeys<ApiUser>;
+// {
+//   userId: number;
+//   firstName: string;
+//   lastName?: string;
+// }
+
+type UserOptionalKeys = object.GetOptionalKeys<ApiUser>;
+// "last_name"
+
+type UserPatch = object.OverrideFields<
+  ClientUser,
+  { firstName: "Admin" }
+>;
+// {
+//   userId: number;
+//   firstName: "Admin";
+//   lastName?: string;
+// }
+
+type NestedApiUser = {
+  user_profile: {
+    first_name: string;
+    address_info: {
+      zip_code: string;
+    };
+  };
+};
+
+type NestedClientUser = object.DtoWithCamelCaseKeysRecursive<NestedApiUser>;
+// {
+//   userProfile: {
+//     firstName: string;
+//     addressInfo: {
+//       zipCode: string;
+//     };
+//   };
+// }
+
+type FieldName = string.SnakeToCamelCase<"created_at">;
+// "createdAt"
 ```
 
 ## Array Utilities
@@ -205,6 +265,15 @@ Returns a character by index.
 ```ts
 type Result = string.At<"hello", 1>;
 // "e"
+```
+
+### `string.SnakeToCamelCase<T>`
+
+Converts a `snake_case` string literal to `camelCase`.
+
+```ts
+type Result = string.SnakeToCamelCase<"user_profile_name">;
+// "userProfileName"
 ```
 
 ## Object Utilities
@@ -433,6 +502,133 @@ type Result = object.RequiredField<
 //   id: number;
 //   name: string;
 //   email: string;
+// }
+```
+
+### `object.IsOptionalKey<T, K>`
+
+Checks whether object key `K` is optional.
+
+```ts
+type Result = object.IsOptionalKey<
+  {
+    id: number;
+    name?: string;
+  },
+  "name"
+>;
+// true
+```
+
+### `object.IsRequiredKey<T, K>`
+
+Checks whether object key `K` is required.
+
+```ts
+type Result = object.IsRequiredKey<
+  {
+    id: number;
+    name?: string;
+  },
+  "id"
+>;
+// true
+```
+
+`object.IsRequeredKey<T, K>` is kept as a backward-compatible alias, but `object.IsRequiredKey<T, K>` should be preferred.
+
+### `object.GetOptionalKeys<T>`
+
+Returns a union of all optional keys in `T`.
+
+```ts
+type Result = object.GetOptionalKeys<{
+  id: number;
+  name?: string;
+  email?: string;
+}>;
+// "name" | "email"
+```
+
+### `object.GetRequiredKeys<T>`
+
+Returns a union of all required keys in `T`.
+
+```ts
+type Result = object.GetRequiredKeys<{
+  id: number;
+  name?: string;
+  active: boolean;
+}>;
+// "id" | "active"
+```
+
+### `object.OverrideFields<T, U>`
+
+Overrides existing fields in `T` using `U`.
+
+Unlike `Merge`, this utility only allows keys that already exist in `T`.
+
+```ts
+type Result = object.OverrideFields<
+  {
+    id: number;
+    role: "user";
+    active: boolean;
+  },
+  {
+    role: "admin";
+    active: false;
+  }
+>;
+// {
+//   id: number;
+//   role: "admin";
+//   active: false;
+// }
+```
+
+### `object.DtoWithCamelCaseKeys<T>`
+
+Converts top-level object keys from `snake_case` to `camelCase`.
+
+```ts
+type Result = object.DtoWithCamelCaseKeys<{
+  first_name: string;
+  last_name: string;
+  is_active: boolean;
+}>;
+// {
+//   firstName: string;
+//   lastName: string;
+//   isActive: boolean;
+// }
+```
+
+### `object.DtoWithCamelCaseKeysRecursive<T>`
+
+Recursively converts nested object keys from `snake_case` to `camelCase`.
+
+Arrays are preserved as-is and are not traversed recursively.
+
+```ts
+type Result = object.DtoWithCamelCaseKeysRecursive<{
+  user_profile: {
+    first_name: string;
+    address_info: {
+      zip_code: string;
+    };
+  };
+  is_active: boolean;
+}>;
+// {
+//   userProfile: {
+//     firstName: string;
+//     addressInfo: {
+//       zipCode: string;
+//     };
+//   };
+//   isActive: boolean;
 // }
 ```
 

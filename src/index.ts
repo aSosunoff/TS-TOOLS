@@ -36,6 +36,13 @@ export type { PropsPath } from "./object/props-path";
 export type { PartialField } from "./object/partial-field";
 export type { RequiredField } from "./object/required-field";
 export type { StrictRecord } from "./object/strict-record";
+export type { IsOptionalKey } from "./object/is-optional-key";
+export type { IsRequiredKey } from "./object/is-requered-key";
+export type { GetOptionalKeys } from "./object/get-optional-keys";
+export type { GetRequiredKeys } from "./object/get-required-keys";
+export type { DtoWithCamelCaseKeys } from "./object/dto-with-camel-case-keys";
+export type { DtoWithCamelCaseKeysRecursive } from "./object/dto-with-camel-case-keys-recursive";
+export type { OverrideFields } from "./object/override-fields";
 
 export type { At as StringAt } from "./string/At";
 export type { First as StringFirst } from "./string/first";
@@ -45,3 +52,4 @@ export type { Replace as StringReplace } from "./string/replace";
 export type { ReplaceAll as StringReplaceAll } from "./string/replace-all";
 export type { Split as StringSplit } from "./string/split";
 export type { Tail as StringTail } from "./string/tail";
+export type { SnakeToCamelCase } from "./string/snake-to-camel-case";
