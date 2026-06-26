@@ -4,3 +4,7 @@ export type { MaybeRefProps } from "./maybe-ref-props";
 export type { Prettify } from "./prettify";
 export type { ReplaceAll } from "./replace-all";
 export type { SplitCamelCase } from "./split-camel-case";
+export type { TypeCheck } from "./type-check";
+export type { IsSameType } from "./is-same-type";
+export type { PrimitiveType } from "./primitive-type";
+export type { IsPrimitiveType } from "./is-primitive-type";

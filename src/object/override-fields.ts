@@ -1,6 +1,5 @@
 import { Prettify } from "../common";
-
-type RemoveFields<T extends object, K extends keyof T> = Omit<T, K>;
+import { RemoveFields } from "./remove-fields";
 
 /**
  * Replaces existing fields in `T` with values from `U`.

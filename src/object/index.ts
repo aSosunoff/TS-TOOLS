@@ -16,3 +16,5 @@ export type { GetRequiredKeys } from "./get-required-keys";
 export type { DtoWithCamelCaseKeys } from "./dto-with-camel-case-keys";
 export type { DtoWithCamelCaseKeysRecursive } from "./dto-with-camel-case-keys-recursive";
 export type { OverrideFields } from "./override-fields";
+export type { RemoveFields } from "./remove-fields";
+export type { DtoToModel } from "./dto-to-model";

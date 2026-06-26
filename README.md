@@ -38,12 +38,16 @@ You can also import commonly used utilities directly from the package root.
 ```ts
 import type {
   ArrayLast,
+  DtoToModel,
   DtoWithCamelCaseKeys,
   DtoWithCamelCaseKeysRecursive,
   GetOptionalKeys,
   HasOnlyKeys,
+  IsPrimitiveType,
   IsRequiredKey,
+  IsSameType,
   OverrideFields,
+  RemoveFields,
   StringReplaceAll,
   SnakeToCamelCase,
   StrictRecord,
@@ -79,6 +83,16 @@ type UserPatch = object.OverrideFields<
 //   userId: number;
 //   firstName: "Admin";
 //   lastName?: string;
+// }
+
+type PublicUser = object.DtoToModel<
+  ApiUser,
+  { userId: string },
+  { deleteFields: "lastName" }
+>;
+// {
+//   userId: string;
+//   firstName: string;
 // }
 
 type NestedApiUser = {
@@ -588,6 +602,25 @@ type Result = object.OverrideFields<
 // }
 ```
 
+### `object.RemoveFields<T, K>`
+
+Removes selected fields from an object type.
+
+```ts
+type Result = object.RemoveFields<
+  {
+    id: number;
+    name: string;
+    password: string;
+  },
+  "password"
+>;
+// {
+//   id: number;
+//   name: string;
+// }
+```
+
 ### `object.DtoWithCamelCaseKeys<T>`
 
 Converts top-level object keys from `snake_case` to `camelCase`.
@@ -602,6 +635,51 @@ type Result = object.DtoWithCamelCaseKeys<{
 //   firstName: string;
 //   lastName: string;
 //   isActive: boolean;
+// }
+```
+
+### `object.DtoToModel<T, R, Options>`
+
+Converts a DTO into a model by converting keys to `camelCase`, overriding selected field types, and removing selected model fields.
+
+`R` is intended for real type changes. If a primitive field is overridden with the same type, TypeScript reports a redundant override. `Options["deleteFields"]` removes fields from the final model.
+
+```ts
+type Result = object.DtoToModel<
+  {
+    user_id: number;
+    created_at: string;
+    password_hash: string;
+  },
+  {
+    createdAt: Date;
+  },
+  {
+    deleteFields: "passwordHash";
+  }
+>;
+// {
+//   userId: number;
+//   createdAt: Date;
+// }
+```
+
+`Options["checkObjectFields"]` enables same-type diagnostics for object fields, and `Options["skipTypeCheckKeys"]` disables same-type diagnostics for selected keys.
+
+```ts
+type Result = object.DtoToModel<
+  {
+    status_id: number;
+  },
+  {
+    statusId: number;
+  },
+  {
+    skipTypeCheckKeys: "statusId";
+  }
+>;
+// {
+//   statusId: number;
 // }
 ```
 
@@ -727,4 +805,46 @@ Replaces all occurrences of a string literal. `FROM` defaults to `"-"` and `TO` 
 ```ts
 type Result = common.ReplaceAll<"user-profile-name">;
 // "user_profile_name"
+```
+
+### `common.TypeCheck<T>`
+
+Converts a type into a generic function predicate for strict type comparison.
+
+```ts
+type Result = common.TypeCheck<string>;
+// <G>() => G extends string ? 1 : 2
+```
+
+### `common.IsSameType<T, U>`
+
+Checks whether two types are exactly equivalent.
+
+```ts
+type A = common.IsSameType<string, string>;
+// true
+
+type B = common.IsSameType<string, string | number>;
+// false
+```
+
+### `common.PrimitiveType`
+
+Union of primitive values used by type-level diagnostics.
+
+```ts
+type Result = common.PrimitiveType;
+// string | number | boolean | bigint | symbol | null | undefined
+```
+
+### `common.IsPrimitiveType<T>`
+
+Checks whether a type is a primitive or a union of primitives.
+
+```ts
+type A = common.IsPrimitiveType<string | number>;
+// true
+
+type B = common.IsPrimitiveType<{ id: number }>;
+// false
 ```

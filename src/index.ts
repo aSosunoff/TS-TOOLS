@@ -24,6 +24,10 @@ export type { MaybeRefProps } from "./common/maybe-ref-props";
 export type { Prettify } from "./common/prettify";
 export type { ReplaceAll as CommonReplaceAll } from "./common/replace-all";
 export type { SplitCamelCase } from "./common/split-camel-case";
+export type { TypeCheck } from "./common/type-check";
+export type { IsSameType } from "./common/is-same-type";
+export type { PrimitiveType } from "./common/primitive-type";
+export type { IsPrimitiveType } from "./common/is-primitive-type";
 
 export type { CollapseObject } from "./object/collapse-object";
 export type { GetTypeByPropsPath } from "./object/get-type-by-props-path";
@@ -43,6 +47,8 @@ export type { GetRequiredKeys } from "./object/get-required-keys";
 export type { DtoWithCamelCaseKeys } from "./object/dto-with-camel-case-keys";
 export type { DtoWithCamelCaseKeysRecursive } from "./object/dto-with-camel-case-keys-recursive";
 export type { OverrideFields } from "./object/override-fields";
+export type { RemoveFields } from "./object/remove-fields";
+export type { DtoToModel } from "./object/dto-to-model";
 
 export type { At as StringAt } from "./string/At";
 export type { First as StringFirst } from "./string/first";
