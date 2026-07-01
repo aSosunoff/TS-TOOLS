@@ -18,3 +18,4 @@ export type { DtoWithCamelCaseKeysRecursive } from "./dto-with-camel-case-keys-r
 export type { OverrideFields } from "./override-fields";
 export type { RemoveFields } from "./remove-fields";
 export type { DtoToModel } from "./dto-to-model";
+export type { TakeSnakeCaseKey } from "./take-snake-case-key";

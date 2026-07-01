@@ -7,3 +7,4 @@ export type { Replace } from "./replace";
 export type { ReplaceAll } from "./replace-all";
 export type { At } from "./At";
 export type { SnakeToCamelCase } from "./snake-to-camel-case";
+export type { HasSnakeCaseKey } from "./has-snake-case-key";

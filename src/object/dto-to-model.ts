@@ -1,7 +1,9 @@
 import type { StrictRecord } from "./strict-record";
 import type { DtoWithCamelCaseKeys } from "./dto-with-camel-case-keys";
-import { IsPrimitiveType, IsSameType } from "../common";
-import { OverrideFields } from "./override-fields";
+import type { IsPrimitiveType, IsSameType } from "../common";
+import type { OverrideFields } from "./override-fields";
+import type { TakeSnakeCaseKey } from "./take-snake-case-key";
+import type { HasSnakeCaseKey } from "../string";
 
 /**
  * Diagnostic type used when a field is overridden with the same type.
@@ -11,8 +13,7 @@ import { OverrideFields } from "./override-fields";
  *
  * @template K - Field key that does not need to be overridden.
  */
-type SameFieldTypeError<K extends PropertyKey> =
-  `DtoToModel error: field "${K & string}" already has this type in DTO`;
+type SameFieldTypeError<K extends PropertyKey> = `DtoToModel error: field "${K & string}" already has this type in DTO`;
 
 /**
  * Diagnostic type used when a field is both removed and overridden.
@@ -23,6 +24,17 @@ type SameFieldTypeError<K extends PropertyKey> =
  * @template K - Field key that was marked for removal.
  */
 type RemovedFieldError<K extends PropertyKey> = `DtoToModel error: field "${K & string}" was removed from the model`;
+
+/**
+ * Diagnostic type used when an override field is written in `snake_case`.
+ *
+ * `DtoToModel` converts DTO keys to `camelCase` first, so overrides must refer
+ * to model fields.
+ *
+ * @template K - Field key that should be written in `camelCase`.
+ */
+type SnakeCaseFieldError<K extends PropertyKey> =
+  `DtoToModel error: field "${K & string}" must be written in camelCase, snake_case is not allowed here`;
 
 /**
  * Builds a constraint for fields that may be overridden in the model.
@@ -72,19 +84,20 @@ export type ModelOverrideFields<
  * @returns Constraint with diagnostics for removed fields.
  */
 export type CheckRemovedField<T extends object, D> = {
-  [K in keyof T]: K extends D ? RemovedFieldError<K> : T[K];
+  [K in keyof T]: K extends D ? RemovedFieldError<K> : unknown;
 };
 
 /**
  * Options for DTO-to-model conversion.
  *
- * @template T - Source DTO object.
+ * @template Source - Source DTO object.
+ * @template Target - Model override fields.
  */
-type DtoToModelOptions<T extends object> = Partial<{
+type DtoToModelOptions<Source extends object, Target extends object> = Partial<{
   /**
    * Model keys to remove after key conversion and field overrides.
    */
-  deleteFields: keyof DtoWithCamelCaseKeys<T>;
+  deleteFields: keyof DtoWithCamelCaseKeys<Source>;
   /**
    * Whether object fields overridden with the same structural type should be diagnosed.
    */
@@ -94,25 +107,47 @@ type DtoToModelOptions<T extends object> = Partial<{
    *
    * Useful for intentional compatible overrides, such as `number` to a numeric enum.
    */
-  skipTypeCheckKeys: keyof DtoWithCamelCaseKeys<T>;
+  skipTypeCheckKeys: keyof DtoWithCamelCaseKeys<Source>;
+  /**
+   * Snake_case override keys that should skip the diagnostic.
+   *
+   * Use only for temporary migration of legacy model types. Normally, keys in
+   * `R` should be written in `camelCase`.
+   */
+  skipSnakeCaseCheck: TakeSnakeCaseKey<Target>;
 }>;
 
 type DefaultDtoToModelOptions = StrictRecord<
-  keyof DtoToModelOptions<object>,
+  keyof DtoToModelOptions<object, object>,
   {
     deleteFields: never;
     checkObjectFields: false;
     skipTypeCheckKeys: never;
+    skipSnakeCaseCheck: never;
   }
 >;
 
 type WithDefaultOptions<
-  T extends object,
-  Options extends DtoToModelOptions<T>,
+  Source extends object,
+  Target extends object,
+  Options extends DtoToModelOptions<Source, Target>,
   K extends keyof DefaultDtoToModelOptions,
 > = K extends keyof Options ? Exclude<Options[K], undefined> : DefaultDtoToModelOptions[K];
 
 type EmptyRecord = object;
+
+/**
+ * Builds a constraint that reports `snake_case` override keys.
+ *
+ * Each `snake_case` key uses `SnakeCaseFieldError` instead of `unknown`, making
+ * the field visible as an error in `DtoToModel`.
+ *
+ * @template T - Override fields to check.
+ * @returns Constraint with diagnostics for `snake_case` keys.
+ */
+export type CheckSnakeCase<T extends object> = {
+  [K in keyof T]: HasSnakeCaseKey<K> extends true ? SnakeCaseFieldError<K> : unknown;
+};
 
 /**
  * Converts a DTO into a model by camel-casing keys, overriding fields, and removing fields.
@@ -124,8 +159,9 @@ type EmptyRecord = object;
  *
  * The third parameter `Options` controls additional checks: `deleteFields`
  * removes fields from the final model, `checkObjectFields` enables diagnostics
- * for equal object fields, and `skipTypeCheckKeys` disables the same-type
- * diagnostic for selected fields.
+ * for equal object fields, `skipTypeCheckKeys` disables the same-type
+ * diagnostic for selected fields, and `skipSnakeCaseCheck` disables the
+ * `snake_case` key diagnostic for selected overrides.
  *
  * If a field is included in both `R` and `Options["deleteFields"]`, TypeScript
  * reports the conflict because removed fields should not be overridden.
@@ -145,19 +181,18 @@ type EmptyRecord = object;
  */
 export type DtoToModel<
   T extends object,
-  R extends Partial<
-    CheckRemovedField<
+  R extends CheckSnakeCase<Omit<R, WithDefaultOptions<T, R, Options, "skipSnakeCaseCheck">>> &
+    CheckRemovedField<R, WithDefaultOptions<T, R, Options, "deleteFields">> &
+    Partial<
       ModelOverrideFields<
         DtoWithCamelCaseKeys<T>,
         R,
-        WithDefaultOptions<T, Options, "checkObjectFields">,
-        WithDefaultOptions<T, Options, "skipTypeCheckKeys">
-      >,
-      WithDefaultOptions<T, Options, "deleteFields">
-    >
-  > = never,
-  Options extends DtoToModelOptions<T> = EmptyRecord,
+        WithDefaultOptions<T, R, Options, "checkObjectFields">,
+        WithDefaultOptions<T, R, Options, "skipTypeCheckKeys">
+      >
+    > = never,
+  Options extends DtoToModelOptions<T, R> = EmptyRecord,
 > = Omit<
   OverrideFields<DtoWithCamelCaseKeys<T>, [R] extends [never] ? EmptyRecord : R>,
-  WithDefaultOptions<T, Options, "deleteFields">
+  WithDefaultOptions<T, R, Options, "deleteFields">
 >;

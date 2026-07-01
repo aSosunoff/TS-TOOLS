@@ -43,6 +43,7 @@ import type {
   DtoWithCamelCaseKeysRecursive,
   GetOptionalKeys,
   HasOnlyKeys,
+  HasSnakeCaseKey,
   IsPrimitiveType,
   IsRequiredKey,
   IsSameType,
@@ -51,6 +52,7 @@ import type {
   StringReplaceAll,
   SnakeToCamelCase,
   StrictRecord,
+  TakeSnakeCaseKey,
 } from "@asosunoff/ts-tools";
 ```
 
@@ -116,6 +118,12 @@ type NestedClientUser = object.DtoWithCamelCaseKeysRecursive<NestedApiUser>;
 
 type FieldName = string.SnakeToCamelCase<"created_at">;
 // "createdAt"
+
+type HasSnakeCaseField = string.HasSnakeCaseKey<"created_at">;
+// true
+
+type ApiSnakeCaseKeys = object.TakeSnakeCaseKey<ApiUser>;
+// "user_id" | "first_name" | "last_name"
 ```
 
 ## Array Utilities
@@ -288,6 +296,18 @@ Converts a `snake_case` string literal to `camelCase`.
 ```ts
 type Result = string.SnakeToCamelCase<"user_profile_name">;
 // "userProfileName"
+```
+
+### `string.HasSnakeCaseKey<K>`
+
+Checks whether a property key is a string key containing `_`.
+
+```ts
+type A = string.HasSnakeCaseKey<"user_id">;
+// true
+
+type B = string.HasSnakeCaseKey<"userId">;
+// false
 ```
 
 ## Object Utilities
@@ -638,11 +658,24 @@ type Result = object.DtoWithCamelCaseKeys<{
 // }
 ```
 
+### `object.TakeSnakeCaseKey<T>`
+
+Extracts a union of object keys written in `snake_case`.
+
+```ts
+type Result = object.TakeSnakeCaseKey<{
+  user_id: number;
+  firstName: string;
+  created_at: string;
+}>;
+// "user_id" | "created_at"
+```
+
 ### `object.DtoToModel<T, R, Options>`
 
 Converts a DTO into a model by converting keys to `camelCase`, overriding selected field types, and removing selected model fields.
 
-`R` is intended for real type changes. If a primitive field is overridden with the same type, TypeScript reports a redundant override. `Options["deleteFields"]` removes fields from the final model.
+`R` is intended for real type changes after DTO keys are converted to `camelCase`. If a primitive field is overridden with the same type, TypeScript reports a redundant override. `Options["deleteFields"]` removes fields from the final model.
 
 ```ts
 type Result = object.DtoToModel<
@@ -661,6 +694,28 @@ type Result = object.DtoToModel<
 // {
 //   userId: number;
 //   createdAt: Date;
+// }
+```
+
+Override keys must be written in `camelCase`. If a legacy model still needs a `snake_case` override,
+`Options["skipSnakeCaseCheck"]` disables that diagnostic for selected keys. Use `Options["deleteFields"]` if the
+converted `camelCase` field should be removed from the final model.
+
+```ts
+type Result = object.DtoToModel<
+  {
+    user_id: number;
+  },
+  {
+    user_id: string;
+  },
+  {
+    deleteFields: "userId";
+    skipSnakeCaseCheck: "user_id";
+  }
+>;
+// {
+//   user_id: string;
 // }
 ```
 

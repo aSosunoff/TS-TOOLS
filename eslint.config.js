@@ -1,5 +1,7 @@
 const tsParser = require("@typescript-eslint/parser");
 const tsPlugin = require("@typescript-eslint/eslint-plugin");
+const prettierPlugin = require("eslint-plugin-prettier");
+const prettierConfig = require("./prettier.config.cjs");
 
 module.exports = [
   {
@@ -16,6 +18,7 @@ module.exports = [
     },
     plugins: {
       "@typescript-eslint": tsPlugin,
+      prettier: prettierPlugin,
     },
     rules: {
       ...tsPlugin.configs.recommended.rules,
@@ -24,6 +27,12 @@ module.exports = [
       "@typescript-eslint/no-inferrable-types": "warn",
       "@typescript-eslint/explicit-module-boundary-types": "off",
       "@typescript-eslint/no-explicit-any": "off",
+      "prettier/prettier": [
+        "error",
+        {
+          ...prettierConfig,
+        },
+      ],
     },
   },
 ];
