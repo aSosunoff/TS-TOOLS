@@ -12,15 +12,6 @@ TypeScript type-level utility collection.
 npm i @asosunoff/ts-tools
 ```
 
-## Development
-
-```sh
-git clone https://github.com/aSosunoff/TS-TOOLS.git
-cd TS-TOOLS
-npm i
-npm run build
-```
-
 ## Usage
 
 ```ts
@@ -352,7 +343,7 @@ type B = object.isObject<string[]>;
 
 ### `object.PropsPath<T>`
 
-Builds a union of nested property paths.
+Builds a union of nested leaf property paths. Pass `true` as the second parameter to include intermediate object paths too.
 
 ```ts
 type Result = object.PropsPath<{
@@ -364,6 +355,19 @@ type Result = object.PropsPath<{
   active: boolean;
 }>;
 // "user.profile.name" | "active"
+
+type AllPaths = object.PropsPath<
+  {
+    user: {
+      profile: {
+        name: string;
+      };
+    };
+    active: boolean;
+  },
+  true
+>;
+// "user" | "user.profile" | "user.profile.name" | "active"
 ```
 
 ### `object.GetTypeByPropsPath<T, PATH>`
@@ -382,6 +386,18 @@ type Result = object.GetTypeByPropsPath<
   "user.profile.name"
 >;
 // string
+
+type Profile = object.GetTypeByPropsPath<
+  {
+    user: {
+      profile: {
+        name: string;
+      };
+    };
+  },
+  "user.profile"
+>;
+// { name: string }
 ```
 
 ### `object.HasKeys<K, T>`

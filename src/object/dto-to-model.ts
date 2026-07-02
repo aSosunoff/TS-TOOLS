@@ -4,6 +4,7 @@ import type { IsPrimitiveType, IsSameType } from "../common";
 import type { OverrideFields } from "./override-fields";
 import type { TakeSnakeCaseKey } from "./take-snake-case-key";
 import type { HasSnakeCaseKey } from "../string";
+import { RemoveFields } from "./remove-fields";
 
 /**
  * Diagnostic type used when a field is overridden with the same type.
@@ -180,19 +181,21 @@ export type CheckSnakeCase<T extends object> = {
  * // { createdAt: Date }
  */
 export type DtoToModel<
-  T extends object,
-  R extends CheckSnakeCase<Omit<R, WithDefaultOptions<T, R, Options, "skipSnakeCaseCheck">>> &
-    CheckRemovedField<R, WithDefaultOptions<T, R, Options, "deleteFields">> &
+  Source extends object,
+  Target extends CheckSnakeCase<
+    RemoveFields<Target, WithDefaultOptions<Source, Target, Options, "skipSnakeCaseCheck">>
+  > &
+    CheckRemovedField<Target, WithDefaultOptions<Source, Target, Options, "deleteFields">> &
     Partial<
       ModelOverrideFields<
-        DtoWithCamelCaseKeys<T>,
-        R,
-        WithDefaultOptions<T, R, Options, "checkObjectFields">,
-        WithDefaultOptions<T, R, Options, "skipTypeCheckKeys">
+        DtoWithCamelCaseKeys<Source>,
+        Target,
+        WithDefaultOptions<Source, Target, Options, "checkObjectFields">,
+        WithDefaultOptions<Source, Target, Options, "skipTypeCheckKeys">
       >
     > = never,
-  Options extends DtoToModelOptions<T, R> = EmptyRecord,
+  Options extends DtoToModelOptions<Source, Target> = EmptyRecord,
 > = Omit<
-  OverrideFields<DtoWithCamelCaseKeys<T>, [R] extends [never] ? EmptyRecord : R>,
-  WithDefaultOptions<T, R, Options, "deleteFields">
+  OverrideFields<DtoWithCamelCaseKeys<Source>, [Target] extends [never] ? EmptyRecord : Target>,
+  WithDefaultOptions<Source, Target, Options, "deleteFields">
 >;
